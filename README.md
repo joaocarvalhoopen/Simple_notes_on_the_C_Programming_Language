@@ -268,7 +268,8 @@ int ar_vars[4] = { 0, 1, 2, 3 };
 
 // IMPORTANT: "ar_vars" is the same as "&ar_vars[0]"
 
-// IMPORTANT: "ar_vars[n]" is the same as "*(ar_vars + n)" and is the same as "*(p + n)" if p is a pointer to the first position.
+// IMPORTANT: "ar_vars[n]" is the same as "*(ar_vars + n)" and is the same as "*(p + n)" 
+//             if p is a pointer to the first position.
 
 
 // ** 10 **
@@ -1057,9 +1058,10 @@ int main(void){
 	*pAdcCr1Reg &= ~(1 << 8)
 
 
-    // The following case makes the Clear of the value 3 -> ~'11' that is '00' and set's the value 2 -> '10'.
+    // The following case makes the Clear of the value 3 -> ~'11' that is '00' 
+    // and set's the value 2 -> '10'.
 
-    uint32_t volatile * pGPIOAModeReg = (uint32_t *) (GPIOA_BASE_ADDR + 0x00)   // + offset of address.
+    uint32_t volatile * pGPIOAModeReg = (uint32_t *) (GPIOA_BASE_ADDR + 0x00)  // + offset address.
 
     *pGPIOAModeReg &= ~(0x3 << 16);    // **Clear**
     *pGPIOAModeReg |=  (0x2 << 16);    // **Set**
@@ -1119,7 +1121,8 @@ uint32_t volatile * volatile p = (uint32_t *) SRAM_ADDRESS1;
 
 	uint32_t all_messages_size = sizeof(all_messages) / sizeof(all_messages[0]);
 	for(int i=0; i < all_messages_size; i++){
-		HAL_UART_Transmit(&huart2, (uint8_t *) all_messages[i], (uint16_t) strlen(all_messages[i]), timeout);
+		HAL_UART_Transmit(&huart2, (uint8_t *) all_messages[i], (uint16_t) strlen(all_messages[i]),
+                          timeout);
 	}
 
 ```
@@ -1138,7 +1141,8 @@ uint32_t volatile * volatile p = (uint32_t *) SRAM_ADDRESS1;
 	                       "3. Option 3.\n"
 	                       "4. Option 4.\n\n";
 	
-	HAL_UART_Transmit(&huart2, (uint8_t *) message, (uint16_t) strlen(message), timeout);
+	HAL_UART_Transmit(&huart2, (uint8_t *) message, (uint16_t) strlen(message),
+                      timeout);
 	
 ```
 
