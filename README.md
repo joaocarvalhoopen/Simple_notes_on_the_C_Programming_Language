@@ -307,6 +307,10 @@ int z = **p_B;  // Result z = 2
 
 1. Initialization
 
+2. Passing arrays to functions.
+
+3. To pass to a function an array with a single dimension. **IMPORTANT CASE**
+
 ```
 // ** 1 **
 
@@ -326,9 +330,43 @@ int ar[4][3] = {{1, 2},          // Row x Column
 
 // ** 2 **
 
+// Passing arrays to functions. 
+// The array isn't copied only de reference is copied.
+
+int clear(int ar_tmp[][3], size_row, size_column,
+          position_clear_x, position_clear_y){
+    ar_temp[position_clear_x][position_clear_y] = 0;
+}
+
+// To call the function do...
+
+clear(ar);
+
+// Other way of defining the function to pass an array using pointers would be...
+
+int clear(int **ar_tmp, size_row, size_column, position_clear_x, position_clear_y){
+    // but in here you would need to make some calculation for
+    // the indexing of the using pointers and pointer arithmetic. 
+
+}
+
+// ** 3 **
+
+// To pass to a function an array with a single dimension.
+
+int clear(int ar_tmp[], size_row, position_clear){
+    ar_temp[position_clear] = 0;
+}
+
+clear(ar);
+
+// Or it could be done using pointers.
+
+int clear(int *ar_tmp, size_row, position_clear){
+    *(ar_temp + position_clear) = 0;
+}
 
 ```
-
 
 ## True vs False
 
@@ -439,7 +477,103 @@ int num_elems = sizeof(ar_var) / sizeof(ar_var[0]) ;   // 2 elements
 
 ## Structures
 
+1. Definition of a structure and declaration of a variable.
+
+2. Definition of a structure and declaration of a variable locally.
+
+3. Definition of a new type with typedef of a structure. (This is the preferential way of declaring, that can easily be reused if made inside a '.h' file).    
+
+4. Initialization  of a structure.
+
+5. Iterating trough a structure array in a fast way inside a function. ** IMPORTANT CASE**
+
 ```
+// ** 1 **
+
+// Definition of a structure.
+struct car{
+    char brandName[];
+    char *model;
+    int numDoors;
+};
+
+// Declaration of the variable of the structure.
+struct car mycar;
+
+
+// ** 2 **
+
+// Definition of a structure.
+struct car{
+    char brandName[];
+    char *model;
+    int numDoors;
+} cs, cs_ar[10], *pcs;    
+
+// cs.numDoors - Variable car structure.
+
+// cs_ar[1].numDoors - Variable array of car structures.
+
+// (* pcs).numDoors <=> pcs->numDoors - Pointer do structure of car.
+
+
+// ** 3 **
+
+// Definition of a new type with typedef of a structure.
+typedef struct {
+    char brandName[];
+    char *model;
+    int numDoors;
+} CAR;
+
+// Declaration of the variable of the structure.
+CAR myCar;
+CAR myCar[10];
+CAR *pCar;
+
+// ** 4 **
+
+// Initialization  of a structure.
+myCar = { "Suzuki", "Cleo", 5 };
+
+
+// ** 5 **
+
+// Iterating trough a structure array in a fast way.
+
+// file 'car.h'
+
+  #ifndef CAR_H
+  #define CAR_H
+
+  // Contains the definition of the new type car that is a structure.
+  typedef struct {
+      char brandName[];
+      char *model;
+      int numDoors;
+  } CAR;
+
+  #endif
+
+// file 'car.c'
+
+  #include "car.h"
+
+  CAR all_cars[10];
+
+  int isThereACarWithNumOfDoors(CAR car_s[], int size, int numDoors){
+      CAR *pCar;
+      CAR *pLastPlusOne = &car[size]:
+      for(pCar = car_s; pcar < pLastPlusOne; ++p){
+          if (pCar->numDoors == numDoors){
+              return 1;                    // break and continue
+          }
+      }
+      return 0;
+  }
+
+  int exists = isThereACarWithNumOfDoors(all_cars, 10, 4);
+
 TODO
 
 ```
@@ -451,6 +585,8 @@ TODO
 int j = x.y;     // Get the value of member y in structure x.
 
 int j = p->y;    // Get the value of member y in structure pointed to by p.
+
+// p->y   <=> (*p).y    - They represent the same thing.
 
 ```
 
@@ -637,7 +773,7 @@ void led_sequence(void){
 
 ```
 
-## Technique for defining more then one statement in a preprocessor Macro.
+## Technique for defining more than one statement in a preprocessor Macro.
 
 ```
 // This is a technique in C programming to execute multiple C statements using a single C macro.
