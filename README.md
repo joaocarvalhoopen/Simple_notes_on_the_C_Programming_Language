@@ -5,6 +5,46 @@ Some simple notes on the C programming language that I took while refreshing my 
 - C : A Software Engineering Approach, Third Ed. by Peter A. Darnell, Philip E. Margolis
 - C Programming : A modern Approach, Second Ed. by K. N. King
 
+## Table of contents
+
+- [Simple notes on the C Programming Language](#simple-notes-on-the-c-programming-language)
+  - [Description](#description)
+  - [Table of contents](#table-of-contents)
+  - [Names in C](#names-in-c)
+  - [Function that exits a program - exit()](#function-that-exits-a-program---exit)
+  - [printf and scanf](#printf-and-scanf)
+  - [Scaler types](#scaler-types)
+  - [TypeDef's](#typedefs)
+  - [Pointers](#pointers)
+  - [Multidimensional arrays](#multidimensional-arrays)
+  - [True vs False](#true-vs-false)
+  - [Switch](#switch)
+  - [Logical operators](#logical-operators)
+  - [Decrement and increment operators](#decrement-and-increment-operators)
+  - [Comparing floating point values](#comparing-floating-point-values)
+  - [Bit operators](#bit-operators)
+  - [sizeof operator](#sizeof-operator)
+  - [Structures](#structures)
+  - [Structure operators](#structure-operators)
+  - [Unions](#unions)
+  - [Dynamic memory allocation on the Heap](#dynamic-memory-allocation-on-the-heap)
+  - [Types of includes](#types-of-includes)
+  - [Keyword static](#keyword-static)
+  - [Same ways of defining strings](#same-ways-of-defining-strings)
+  - [Functions for manipulating strings and general functions](#functions-for-manipulating-strings-and-general-functions)
+  - [Functions for manipulating files](#functions-for-manipulating-files)
+  - [Function pointers](#function-pointers)
+  - [C99 - stdint.h - Primitive fixed size types](#c99---stdinth---primitive-fixed-size-types)
+  - [Preprocessor Macros](#preprocessor-macros)
+  - [Technique for defining more than one statement in a preprocessor Macro.](#technique-for-defining-more-than-one-statement-in-a-preprocessor-macro)
+  - [C for Embedded Systems](#c-for-embedded-systems)
+  - [Keyword **const** and **volatile**](#keyword-const-and-volatile)
+  - [Sizes for 32 bit microController](#sizes-for-32-bit-microcontroller)
+  - [Two ways of making a Menu with strings - char * - and send it to UART.](#two-ways-of-making-a-menu-with-strings---char----and-send-it-to-uart)
+  - [TODO:](#todo)
+  - [Have fun!](#have-fun)
+
+
 ## Names in C
 
 1. They are case sensitive.
@@ -176,7 +216,9 @@ COLOR_T my_color = green;
 
 9. Accessing arrays with pointers. 
 
-10. Arrays of pointers. 
+10. Arrays of pointers.
+
+11. Pointers to Pointers. 
 
 ```
 // ** 1 **
@@ -826,7 +868,20 @@ int j = p->y;    // Get the value of member y in structure pointed to by p.
 ## Unions
 
 ```
-TODO
+typedef union{
+    struct{
+        int a1;
+        int a2;
+    } s;
+    float j;
+    double k;
+} UNION_NUM;
+
+UNION_NUM value;
+
+value.s.a1 = 1;     // Only one of those values exists in memory
+value.j    = 4;     // at the same time. 
+value.k    = 8;
 
 ```
 
@@ -838,7 +893,35 @@ TODO
 4. free()    - Free the memory allocated by a previous malloc(), calloc() or realloc(). 
 
 ```
-TODO: Give examples of utilization.
+// ** 1 **
+
+// malloc - Allocates a memory block for 100 int's.
+int * ptr_1 = (int *) malloc(100 * sizeof(int))
+if (ptt_1 == NULL)
+   printf("Error in malloc().");
+
+
+// ** 2 **
+
+// calloc - Allocates a memory block for 100 int's.
+int * ptr_2 = (int *) calloc(100, sizeof(int));
+if (ptt_1 == NULL)
+   printf("Error in calloc().");
+
+
+// ** 3 **
+
+// realloc - Reallocates memory of a new size, the new size is not initialized.
+unsigned int newSize = 200;
+int * ptr_3 = realloc(ptr_1, newSize);
+if (ptt_1 == NULL)
+   printf("Error in realloc().");
+
+
+// ** 4 **
+
+// free - Free's the memory previously allocated.
+free(ptr);
 
 ```
 
@@ -917,17 +1000,204 @@ uint8_t * message_3 = "cemelhas_2\n";
 
 ```
 
-## Functions for manipulating strings
+## Functions for manipulating strings and general functions
 
 ```
-TODO
+// ** stdio.h **
+
+sprintf() - The same as printf but to a string.
+sscanf()  - The same as scanf but from a string.
+
+
+// ** stdlib.h **
+
+atoi() - Converts a string to a int.
+atof() - Converts a string to a double.
+atol() - Converts a string to a long int.
+
+rand()  - Returns a random number. 
+srand() - Returns a random number given a seed.
+
+atexit() - Runs a function handler at the exit of the program.
+
+getenv() - Get environment variables or proprieties from the
+           system.
+system() - Executes a string command on the host environment,
+           on the shell.
+
+bsearch() - Binary search.
+qsort()   - Quick sort.
+
+
+// ** string.h **
+
+memchr()   - Returns the first occurrence of a unsigned char in a
+            array or memory sequence.
+memcmp()   - Compares the first n chars of the sequence s1 and s2.
+memcpy()   - Copies the first n chars from s2 to s1.
+memmove()  - Very similar to memcpy() but works even if the chars
+             overlap.
+memset()   - Initializes a array or a memory block with a value.
+
+strcat()   - Concatenates a copy of s2 to s1.
+strchr()   - Returns the first occurrence of a char in a string.
+strcmp()   - Compares the chars of the sequence s1 with s2.
+strcoll()  - Transforms the string s1 to be suitable to be used
+             by memcmp() and strcmp().  
+strcpy()   - Copies the string pointed by s2 into a array s1.
+strcspn()  - Starting from s1 counts the chars that are not present
+             from s2.
+strerror() - Returns a pointer to an error message represented by
+             errnum.
+strlen()   - Returns the length of a string (in bytes). The '\0'
+             is not included.
+strncat()  - Appends up to n characters of string s2 to the end of
+             string s1.
+strncmp()  - Equal to strcmp() but only for n characters. 
+strncpy()  - Equal to strcpy() but only for n characters.
+
+strpbrk()  - It locates the first character of s1 that is present in s2.
+strrchr()  - It locates the last occurrence of a char in the string s.
+strspn()   - Counts the characters of s1 until it find characters that
+             are not present in s2. 
+
+strstr()   - Find the first occurrence of s2 in s1. 
+strtok()   - Divides the string into tokens.
 
 ```
 
 ## Functions for manipulating files
 
+1. Open a file.
+
+2. Read and write from / to a file.
+
+3. Random access.
+
+4. Read / write one block at a time.
+
+5. Close a file.
+
 ```
-TODO
+// ** 1 **
+
+#include <stddef.h>
+#include <stdio.h>
+
+// Open a file.
+
+"r"  - Open text file for reading.
+"w"  - Open text file for writing. If the file already
+       exists it truncates to zero length. Begin of the file.
+"a"  - Open the file in append mode. You write at the end of
+       the file.
+"r+" - Open the file for reading and for writing. File position
+       at the beginning of the file. 
+"w+" - Creates a new text file for reading and for writing.
+       If the file already exists it will truncate the file
+       to zero length.
+"a+" - Open an existing file or create a new one in append mode.
+       You can read data anywhere but you can only add data in
+       the end of the file.  
+"rb"  - Open file for reading in binary.
+"wb"  - Open file for writing in binary.
+
+
+FILE * open_file(char *filename){
+    FILE *fp;  // file pointer
+
+    fp = fopen(filename, "r");   // r - for read
+    if (fp == NULL)
+        fprintf( stderr, "Error opening file.\n");
+    return fp;
+}
+
+// ** 2 ** 
+
+// Read and write from / to a file.
+
+getc()   - Macro to read one char.
+fgetc()  - Function that does the same as getc().
+putc()   - Macro to writes one char.
+fputc()  - Function that does the same as putc().
+ungetc() - Pushes a character onto a file strem.
+
+fflush() - Flushes the buffer.
+ftell()  - Returns the current file position.
+
+fprintf() - Exactly as printf, but to a file.
+fscanf()  - Exactly as scanf, but from a file.
+
+clearerr() - Resets the error and end-of-file indicator.
+feof()     - Checks if EOF (End Of File) indicator was reached
+             in previous read operation. 
+ferror()   - Returns the integer error code, while reading
+             or writing to a stream.
+
+tmpfile() - Creates a temporary binary file.
+remove()  - Removes a file from file system.
+rename()  - Renames a file in the file system.
+setbuf()  - Alter the buffer proprieties for a file.
+
+
+#include <stddef.h>
+#include <stdio.h>
+
+#define FAIL    0
+#define SUCCESS 1
+
+int copy_text_or_bin_file(char * input_file, char * output_file){
+    FILE *fp1, *fp2;
+    if ( (fp1 = fopen(input_file, "rb")) == NULL )
+        return FAIL;
+    if ( (fp2 = fopen(output_file, "wb")) == NULL )
+    {
+        fclose( fp1 );
+        return FAIL;
+    }
+    while (!feof(fp1))
+        putc(getc( fp1), fp2);
+    fclose(fp1);
+    fclose(fp2);
+    return SUCCESS;
+}
+
+
+// Line oriented reading and writing.
+fgets() - Reads one line from a file stream.
+fputs() - Writes one line to a file stream.
+
+example equal to the previous but copies line by line:
+
+#define LINESIZE 100
+
+char line[LINESIZE];
+
+while( fgets( line, LINESIZE - 1, fp1 ) != NULL )
+   fputs( line, fp2)
+
+
+// ** 3 **
+
+// Random access.
+
+fseek() - Moves the file pointer inside the file
+          to a random position. 
+
+
+// ** 4 **
+
+// Read / write one block at a time.
+
+fread()  - Read one block at a time.
+fwrite() - Writes one block at a time.
+
+
+// ** 5 **
+
+// Close a file.
+
+fclose(fp)
 
 ```
 
