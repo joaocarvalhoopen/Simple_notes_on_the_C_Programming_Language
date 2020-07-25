@@ -463,12 +463,13 @@ if ( (x > 2.0 - 0.0001) && (x < 2.0 + 0.0001){
 
 ```
 sizeof(char);    // 1 bytes
-sizeof(int);     // 4 bytes
-sizeof(int *);   // 8 bytes
+sizeof(int);     // 4 bytes  - Value depends on the CPU architecture and compiler.
+sizeof(int *);   // 8 bytes  - For a 64 bits CPU
 
 int ar_var[2] = { 0, 1 };
 
-sizeof(ar_var);   // 8 bytes
+sizeof(ar_var);   // 8 bytes - Value depends on the CPU architecture,
+                  //           compiler and memory alignment.
 
 // Number of elements of the array.
 int num_elems = sizeof(ar_var) / sizeof(ar_var[0]) ;   // 2 elements
@@ -486,6 +487,16 @@ int num_elems = sizeof(ar_var) / sizeof(ar_var[0]) ;   // 2 elements
 4. Initialization  of a structure.
 
 5. Iterating trough a structure array in a fast way inside a function. ** IMPORTANT CASE**
+
+6. Nested structures, with and without typedef's.
+
+7. Self referencing structures. 
+
+8. Bit Fields
+
+9. Passing structures to functions. Pass by value or pass by reference.
+
+10. Returning a structure from a function. By value and by reference.
 
 ```
 // ** 1 **
@@ -574,10 +585,231 @@ myCar = { "Suzuki", "Cleo", 5 };
 
   int exists = isThereACarWithNumOfDoors(all_cars, 10, 4);
 
-TODO
+
+// ** 6 **
+
+// Nested structures.
+
+// With struct and variable declaration.
+struct car{
+    char brandName[];
+    int numDoors;
+    struct {
+        uint8_t day;
+        uint8_t month;
+        uint16_t year;
+    } license_plate_date;
+};
+
+// Variable of struct declaration and accessing the nested members of
+// the nested structure.
+car car_s;
+car_s.license_plate_date.day = 1;
+
+
+// With TypeDef.
+typedef struct{
+    uint8_t day;
+    uint8_t month;
+    uint16_t year;
+} DATE_T;
+
+
+typedef struct{
+    char brandName[];
+    int numDoors;
+    DATE license_plate_date;
+} CAR_T;
+
+CAR_T car_s;
+CAR_T *pCar_s;
+
+// Accessing the nested structure member.
+car_s.license_plate_date.day   = 1;
+pCar_s->license_plate_date.day = 1;
+
+// ** 7 **
+
+// Self referencing structures.
+
+// IMPORTANT NOTE: You can only do self referencing structures
+//                 with struct and not with typedef.
+//                 But you can use typedef in the following way.
+// The reasons because struct permits self referencing structures
+// is because you can create a pointer to a type that doesn't exists
+// yet, this is called "forward referencing"and in a typedef that 
+// isn't permitted.
+
+struct node{
+    int val;
+    struct node *pNext;
+};
+
+typedef struct node NODE_T;
+
+// Other way of doing the typedef, would be...
+    
+    typedef struct node{
+        int val;
+        struct node *pNext;
+    } NODE_T;
+  
+// Or you can also have two structures referencing each other.
+
+struct node_A{
+    int val;
+    struct node_B *pNext_node_B;
+};
+
+struct node_B{
+    int val;
+    struct node_A *pNext_node_A;
+};
+
+typedef struct node_A NODE_A_T;
+typedef struct node_B NODE_B_T;
+
+// Personal note: See this with more attention regarding the typedef's.
+
+
+// ** 8 **
+
+// Bit Fields
+
+struct date{
+    uint32_t day:5;
+    uint32_t month:4;
+    uint32_t year:11;
+}
+
+typedef struct date DATE_T;
+
+
+// ** 9 **
+
+// Passing structures to functions.
+// Pass by value or pass by reference.
+
+// If you pass by value all the structure bytes have to be copied,
+// if you pass by reference only the 4 bytes of a pointer in
+// a 32 bits architecture, or the 8 bytes of a 64 bit architecture
+// have to be copied to the function parameters. 
+//
+// NOTE: In this regard, it's different that for array's because
+//       arrays are always passed by reference, coping of the address. 
+
+
+struct tag{
+    int val_1;
+    int val_2;
+}
+
+struct tag var_A;
+
+
+// By value ...
+
+void func_1(struct tag s1){
+    s1.val_1 = .... ;
+}
+
+// call passing all the structure.
+func1(var_A);
+
+
+// By reference ...
+
+void func_1(struct tag * pS1){
+    pS1->val_1 = .... ;
+}
+
+// call passing the address.
+func1( &var_A );
+
+
+// IMPORTANT NOTE: The same can be made with typedef's....
+
+typedef struct{
+    int val_1;
+    int val_2;
+} TAG_T;
+
+void func_1(TAG_T s1){
+    s1.val_1 = .... ;
+}
+
+// or...
+
+void func_1(TAG_T * pS1){
+    pS1->val_1 = .... ;
+}
+
+
+// ** 10 **
+
+// Returning a structure from a function. By value and by reference.
+
+typedef struct{
+    int val_1;
+    int val_2;
+} RET_VAL_T;
+
+
+// By value ...
+
+RET_VAL_T calc_A(){
+    RET_VAL_T ret;
+    ret.val_1 = 1;
+    ret.val_2 = 2;
+    return ret;
+}
+
+RET_VAL_T temp = calc_A(); 
+
+
+// By reference ...
+
+RET_VAL_T * calc_B(){
+    static RET_VAL_T ret;
+    ret.val_1 = 1;
+    ret.val_2 = 2;
+    return &ret;
+}
+
+RET_VAL_T pTemp = calc_B();
+
+
+//******
+// The same can be made with struct not using typedef's.
+
+struct ret_val{
+    int val_1;
+    int val_2;
+};
+
+
+struct ret_val calc_A(){
+    struct ret_val ret;
+    ret.val_1 = 1;
+    ret.val_2 = 2;
+    return ret;
+}
+
+struct ret_val temp = calc_A(); 
+
+
+// By reference ...
+
+struct ret_val * calc_B(){
+    static struct ret_val ret;
+    ret.val_1 = 1;
+    ret.val_2 = 2;
+    return &ret;
+}
+
+struct ret_val pTemp = calc_B();
 
 ```
-
 
 ## Structure operators
 
