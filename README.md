@@ -41,8 +41,10 @@ Some simple notes on the C programming language that I took while refreshing my 
   - [Keyword **const** and **volatile**](#keyword-const-and-volatile)
   - [Sizes for 32 bit microController](#sizes-for-32-bit-microcontroller)
   - [Two ways of making a Menu with strings - char * - and send it to UART.](#two-ways-of-making-a-menu-with-strings---char----and-send-it-to-uart)
-  - [TODO:](#todo)
-  - [Have fun!](#have-fun)
+- [Utils](#utils)
+  - [Double Linked List - jco_list](#double-linked-list---jco_list)
+- [TODO:](#todo)
+- [Have fun!](#have-fun)
 
 
 ## Names in C
@@ -1416,11 +1418,46 @@ uint32_t volatile * volatile p = (uint32_t *) SRAM_ADDRESS1;
 	
 ```
 
-## TODO:
--Implement a abstract list. <br>
+# Utils
+
+## Double Linked List - jco_list
+
+This is a Abstract Double Linked List, called jco_list and it's license is MIT Open Source. <br>
+The interface od the list follows. To see examples of the list usage see the tests inside the main.c source code file.
+
+```
+LST *  lst_new(/* NULL or pointer to function equals == */);
+bool   lst_free(LST * lstObj);
+
+int    lst_size(LST * lstObj);
+
+void * lst_get_first(LST * lstObj);
+void * lst_get_last(LST * lstObj);
+void * lst_get_at(LST * lstObj, int pos);
+
+bool   lst_insert_first(LST * lstObj, void * elem);
+bool   lst_insert_last(LST * lstObj, void * elem);
+bool   lst_insert_at(LST * lstObj, void * elem, int pos);
+
+void * lst_remove_first(LST * lstObj);
+void * lst_remove_last(LST * lstObj);
+void * lst_remove_at(LST * lstObj, int pos);
+
+// Iterators NEXT and PREV.
+bool   lst_iter_get_first(LST * lstObj);
+bool   lst_iter_get_last(LST * lstObj);
+void * lst_iter_next(LST * lstObj);
+void * lst_iter_prev(LST * lstObj);
+bool   lst_iter_is_begin(LST * lstObj);
+bool   lst_iter_is_end(LST * lstObj);
+
+```
+
+# TODO:
+-Finishing implement the abstract list. <br>
 -Implement a abstract ArrayList. <br>
 -Implement a abstract HashTable. <br>
 
-## Have fun!
+# Have fun!
 Best regards, <br>
 Joao Nuno Carvalho 
