@@ -109,6 +109,8 @@ int main(void){
 
 5. enum - enumeration types
 
+6. C99 - bool - boolean type - stdbool.h
+
 ```
 // ** 1 **
 
@@ -161,9 +163,21 @@ enum { red, green, blue } color;
 color = green;
 color = blue;
 
+// ** 6 **
+
+// C99 - bool - boolean type - stdbool.h
+#include <stdbool.h>
+
+bool flag = false;
+flag = true;
+if (flag){
+    print("Flag is true!\n");
+}
+
 
 // Data type
 void
+
 
 // Remainder %
 int x = 3;
