@@ -232,6 +232,67 @@ void * lst_get_at(LST * lstObj, int pos){
 }
 
 
+
+//////
+// SET
+
+/*
+  Parameters:
+    LST * lstObj - This is a list object created with the lst_new() func.
+
+    void * elem - The element to be added, a previously allocated element.
+
+    pos - Pos of the element. 0 <= pos < size - 1 .
+
+  Returns:
+    void * - The element that was previously in the pos, you have to
+             deallocate it's memory. 
+             In case of error it return NULL.
+
+  ERRORS:
+    See stderr for the errors.
+*/
+void * lst_set(LST * lstObj, void * elem, int pos){
+    if (lstObj == NULL){
+        fprintf(stderr, "ERROR: jco_list in func lst_set: lstObj is NULL!\n");
+        return false;
+    }else if (elem == NULL){
+        fprintf(stderr, "ERROR: jco_list in func lst_set: elem is NULL!\n");
+        return false;
+    }else if ( pos < 0 && pos >= lstObj->size ){
+        fprintf(stderr, "ERROR: jco_list in func lst_set: pos out of bounds, 0 <= pos < size !\n");
+        return false;
+    }else{
+        NODE * currNode = NULL;
+        // Decide if start from the begin or from the end?
+        // Find the node corresponding to the position before the position.
+        if ((float)pos <= (float)lstObj->size / 2){
+            // First half of the list.
+            // pos == 0
+            currNode = lstObj->firstNode;
+            // pos > 0
+            for(int i=1; i <= pos; ++i){
+                currNode = currNode->next;
+            }
+        }else{
+            // Second half of the list.
+            // From last pos to the begining (last half).
+            // pos == size - 1  (last pos)
+            currNode = lstObj->lastNode;
+            // down to i == pos
+            for(int i = lstObj->size - 1; i > pos; --i){
+                currNode = currNode->prev;
+            }
+        }
+        void * tmpElem = currNode->elem;
+        currNode->elem = elem;
+        return tmpElem;
+    }
+}
+
+// aqui
+
+
 /////////
 // INSERT
 

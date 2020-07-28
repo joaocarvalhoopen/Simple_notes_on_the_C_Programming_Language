@@ -1465,6 +1465,9 @@ void * lst_get_first(LST * lstObj);
 void * lst_get_last(LST * lstObj);
 void * lst_get_at(LST * lstObj, int pos);
 
+// Returns the previous existing element in that pos.
+void * lst_set(LST * lstObj, void * elem, int pos);
+
 bool   lst_insert_first(LST * lstObj, void * elem);
 bool   lst_insert_last(LST * lstObj, void * elem);
 bool   lst_insert_at(LST * lstObj, void * elem, int pos);

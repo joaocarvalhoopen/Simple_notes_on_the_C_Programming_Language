@@ -45,28 +45,6 @@ int test_lst_01(){
     *var_int_3 = 13;
     
 
-    /*
-    // Insert elem num 2.
-    resB = lst_insert_first(lst, var_int_0); 
-    if (!resB){
-        numErrors++;
-        printf("TEST_ERROR %d: lst_insert_first() returned a false!\n", numErrors);
-    }
-    // Insert elem num 1.
-    resB = lst_insert_first(lst, var_int_1);
-    if (!resB){
-        numErrors++;
-        printf("TEST_ERROR %d: lst_insert_first() returned a false!\n", numErrors);
-    }
-    // Insert elem num 0.
-    resB = lst_insert_first(lst, var_int_2);
-    if (!resB){
-        numErrors++;
-        printf("TEST_ERROR %d: lst_insert_first() returned a false!\n", numErrors);
-    }
-    */
-
-
     ////////
     // Insert elements.
 
@@ -217,8 +195,6 @@ int test_lst_01(){
 ///////////////////////////////////////////////////////////////
 
 int test_lst_02(){
-
-
     char * testName = "test_lst_02";
     printf("\n=>Starting %s...\n", testName);
     int numErrors = 0;
@@ -317,12 +293,72 @@ int test_lst_02(){
 
     lst_remove_last(lst);
 
+    ///////////
+    // Test SET
+   
+    int * var_int_10 = (int *) malloc(sizeof(int));
+    int * var_int_11 = (int *) malloc(sizeof(int));
+    int * var_int_12 = (int *) malloc(sizeof(int));
+    int * var_int_13 = (int *) malloc(sizeof(int));
+    *var_int_10 = 20;
+    *var_int_11 = 21;
+    *var_int_12 = 22;
+    *var_int_13 = 23;
+   
+    int pos = 0;
+    int * p_tmp_old = (int *) lst_set(lst, var_int_10, pos);
+    if (p_tmp_old == NULL || *p_tmp_old != *var_int_0){
+        numErrors++;
+        printf("TEST_ERROR %d: lst_set() returned NULL or int value is different!\n",
+               numErrors);
+    }
+    free(p_tmp_old);
+
+    pos = 1;
+    p_tmp_old = (int *) lst_set(lst, var_int_11, pos);
+    if (p_tmp_old == NULL || *p_tmp_old != *var_int_1){
+        numErrors++;
+        printf("TEST_ERROR %d: lst_set() returned NULL or int value is different!\n",
+               numErrors);
+    }
+    free(p_tmp_old);
+
+    pos = 2;
+    p_tmp_old = (int *) lst_set(lst, var_int_12, pos);
+    if (p_tmp_old == NULL || *p_tmp_old != *var_int_2){
+        numErrors++;
+        printf("TEST_ERROR %d: lst_set() returned NULL or int value is different!\n",
+               numErrors);
+    }
+    free(p_tmp_old);
+
+    pos = 3;
+    p_tmp_old = (int *) lst_set(lst, var_int_13, pos);
+    if (p_tmp_old == NULL || *p_tmp_old != *var_int_3){
+        numErrors++;
+        printf("TEST_ERROR %d: lst_set() returned NULL or int value is different!\n",
+               numErrors);
+    }
+    free(p_tmp_old);
+
+
+    //////
+    // Iterators
+
+    printf("After lst_set() - Iterator NEXT lst list values:\n");
+    iterOK = lst_iter_get_first( lst );
+    while( !lst_iter_is_end( lst ) ){
+        int * pTmpI = (int *) lst_iter_next( lst );
+        if (pTmpI != NULL)
+            printf("%d\n", *pTmpI);
+    }
+
 
     ////////
     // Remove elements.
 
     // Remove element 1, in the middle.
-    int pos = 1;
+    pos = 1;
     int * pInt_0 = (int *) lst_remove_at(lst, pos);
     if (pInt_0 == NULL){
         numErrors++;
