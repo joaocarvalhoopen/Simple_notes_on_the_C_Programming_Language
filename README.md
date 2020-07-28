@@ -1437,7 +1437,7 @@ uint32_t volatile * volatile p = (uint32_t *) SRAM_ADDRESS1;
 ## Abstract Double Linked List - jco_list
 
 This is a Abstract Double Linked List, called jco_list and it's license is MIT Open Source. <br>
-The list interace follows. To see examples of the list usage see the tests inside the main.c source code file.
+The list interface follows. To see examples of the list usage see the tests inside the main.c source code file.
 
 ```
 typedef struct node{
