@@ -42,7 +42,7 @@ Some simple notes on the C programming language that I took while refreshing my 
   - [Sizes for 32 bit microController](#sizes-for-32-bit-microcontroller)
   - [Two ways of making a Menu with strings - char * - and send it to UART.](#two-ways-of-making-a-menu-with-strings---char----and-send-it-to-uart)
 - [Utils](#utils)
-  - [Double Linked List - jco_list](#double-linked-list---jco_list)
+  - [Abstract Double Linked List - jco_list](#abstract-double-linked-list---jco_list)
 - [TODO:](#todo)
 - [Have fun!](#have-fun)
 
@@ -1434,10 +1434,10 @@ uint32_t volatile * volatile p = (uint32_t *) SRAM_ADDRESS1;
 
 # Utils
 
-## Double Linked List - jco_list
+## Abstract Double Linked List - jco_list
 
 This is a Abstract Double Linked List, called jco_list and it's license is MIT Open Source. <br>
-The interface od the list follows. To see examples of the list usage see the tests inside the main.c source code file.
+The list interace follows. To see examples of the list usage see the tests inside the main.c source code file.
 
 ```
 typedef struct node{
