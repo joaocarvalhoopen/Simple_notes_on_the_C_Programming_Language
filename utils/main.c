@@ -19,7 +19,7 @@
 
 int test_lst_01(){
     char * testName = "test_lst_01";
-    printf("=>Starting %s...\n", testName);
+    printf("\n=>Starting %s...\n", testName);
     int numErrors = 0;
     bool resB = false;
     LST * lst = lst_new();
@@ -213,11 +213,174 @@ int test_lst_01(){
     return numErrors;
 }
 
+///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+
+int test_lst_02(){
+
+
+    char * testName = "test_lst_02";
+    printf("\n=>Starting %s...\n", testName);
+    int numErrors = 0;
+    bool resB = false;
+    LST * lst = lst_new();
+    
+    int numElem = lst_size(lst);
+    
+    int * var_int_0 = (int *) malloc(sizeof(int));
+    int * var_int_1 = (int *) malloc(sizeof(int));
+    int * var_int_2 = (int *) malloc(sizeof(int));
+    int * var_int_3 = (int *) malloc(sizeof(int));
+    *var_int_0 = 10;
+    *var_int_1 = 11;
+    *var_int_2 = 12;
+    *var_int_3 = 13;
+    
+    ////////
+    // Insert elements.
+
+    // Insert ordered elem in final pos num 1. (empty list)
+    resB = lst_insert_ordered(lst, var_int_1, cmp_int); 
+    
+    // Insert ordered elem in final pos num 0. ( not empty list)
+    resB = lst_insert_ordered(lst, var_int_0, cmp_int); 
+    
+    // Insert ordered elem in final pos num 3. (last)
+    resB = lst_insert_ordered(lst, var_int_3, cmp_int);
+    
+    // Insert ordered elem in final pos num 2. (middle)
+    resB = lst_insert_ordered(lst, var_int_2, cmp_int);
+    
+
+    //////
+    // Iterators
+
+    printf(" Iterator NEXT lst list values:\n");
+    bool iterOK = lst_iter_get_first( lst );
+    while( !lst_iter_is_end( lst ) ){
+        int * pTmpI = (int *) lst_iter_next( lst );
+        if (pTmpI != NULL)
+            printf("%d\n", *pTmpI);
+    }
+
+
+    /////////
+    // Test lst_find
+    
+    NODE * currNode = NULL;
+    NODE ** foundNode = (NODE **) calloc(1, sizeof(NODE *));
+    
+    int * var_int_n = (int * ) malloc(sizeof(int));
+    *var_int_n = 33;
+    const int NUM_PTRS = 5;
+    int * ptrArInt[5] = {var_int_0, var_int_1, var_int_2, var_int_3, var_int_n};
+
+    for(int i = 0; i < NUM_PTRS; ++i){
+        if (foundNode == NULL)
+            printf("ERROR: While allocating NODE ** foundNode.\n");
+        int * var_tmp = ptrArInt[i];
+        int * pInt_n = (int *) lst_find(lst, var_tmp, cmp_int, LST_D_UP,
+                                        NULL, NULL);
+                                   //  currNode, foundNode);
+        if (pInt_n == NULL)
+            printf("TEST_ERROR %d: lst_find() returned NULL error or not found!\n", numErrors);
+        else
+            printf("Found value %d\n", *pInt_n);
+    }
+
+
+    /////////
+    // Test lst_find() detecting several occurrences of element inside an object.
+
+    // Insert one more element, copy of var_int_0.
+    *var_int_n = *var_int_0;
+    lst_insert_last(lst, var_int_n);
+    printf(" Value %d added to the end of the list, repeated two times.\n", *var_int_n);
+    
+
+    int * pInt_n_1 = (int *) lst_find(lst, var_int_0, cmp_int, LST_D_UP,
+                                     currNode, foundNode);
+    printf("Found in sequence value %d\n", *pInt_n_1);
+    
+    // Dereference the pointer to pointer to Node and advances to the NEXT.
+    currNode = (*foundNode)->next;
+    // foundNode = NULL;
+    int * pInt_n_2 = (int *) lst_find(lst, var_int_0, cmp_int, LST_D_UP,
+                                     currNode, foundNode);
+    if (pInt_n_1 != pInt_n_2)
+        printf(" Correct - Pointer pInt_n_1 != pInt_n_2 - %p != %p \n", pInt_n_1, pInt_n_2);
+
+    printf("Found in sequence value %d\n", *pInt_n_2);
+    
+    free(foundNode);
+    free(var_int_n);
+
+    // Remove the added element.
+    lst_remove_last(lst);
+
+
+    ////////
+    // Remove elements.
+
+    // Remove element 1, in the middle.
+    int pos = 1;
+    int * pInt_0 = (int *) lst_remove_at(lst, pos);
+    if (pInt_0 == NULL){
+        numErrors++;
+        printf("TEST_ERROR %d: lst_remove_at() returned NULL!\n", numErrors);
+    }
+    // Remove element 1, in the last pos.
+    pos = 1;
+    int * pInt_1 = (int *) lst_remove_at(lst, pos);
+    if (pInt_1 == NULL){
+        numErrors++;
+        printf("TEST_ERROR %d: lst_remove_at() returned NULL!\n", numErrors);
+    }
+    // Remove element 0, in the first pos.
+    pos = 0;
+    int * pInt_2 = (int *) lst_remove_at(lst, pos);
+    if (pInt_2 == NULL){
+        numErrors++;
+        printf("TEST_ERROR %d: lst_remove_at() returned NULL!\n", numErrors);
+    }
+    // Remove element 0, in the first pos.
+    pos = 0;
+    int * pInt_3 = (int *) lst_remove_at(lst, pos);
+    if (pInt_3 == NULL){
+        numErrors++;
+        printf("TEST_ERROR %d: lst_remove_at() returned NULL!\n", numErrors);
+    }
+
+    // Free the block of memory that the pointer points to objects or structures. 
+    free(pInt_0);
+    free(pInt_1);
+    free(pInt_2);
+    free(pInt_3);
+
+    fflush(stdout);
+
+    resB = lst_free(lst);
+    if (!resB){
+        numErrors++;
+        printf("TEST_ERROR %d: lst_free() returned a false!\n", numErrors);
+    }
+    if (numErrors == 0)
+        printf("    %s Passed.\n", testName);
+    else
+        printf("    %s Failed.\n", testName);
+    return numErrors;
+}
+
+
 int main(){
-    printf("Hello world!\n");
+    printf("\nTest program start....!\n");
 
     // stderr = stdout;
 
     // Test 1
     test_lst_01();
+
+    // Test 2
+    test_lst_02();
+
 }

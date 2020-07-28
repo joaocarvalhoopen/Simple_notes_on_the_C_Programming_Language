@@ -13,7 +13,61 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "jco_list.h"
+
+/////////
+// Compare functions
+
+// Note: You can add in your code a custom one for your dataType.
+
+int cmp_int(void * aIn, void * bIn){
+    int * a = (int *) aIn;
+    int * b = (int *) bIn;
+    if (*a == *b)
+        return 0;
+    else if (*a > *b)
+        return 1;
+    else               // if (*a < *b)
+        return -1;   
+}
+
+int cmp_float(void * aIn, void * bIn){
+    float * a = (float *) aIn;
+    float * b = (float *) bIn;
+    if (*a == *b)
+        return 0;
+    else if (*a > *b)
+        return 1;
+    else               // if (*a < *b)
+        return -1;
+}
+
+int cmp_double(void * aIn, void * bIn){
+    double * a = (double *) aIn;
+    double * b = (double *) bIn;
+    if (*a == *b)
+        return 0;
+    else if (*a > *b)
+        return 1;
+    else               // if (*a < *b)
+        return -1;
+}
+
+int cmp_single_char(void * aIn, void * bIn){
+    char * a = (char *) aIn;
+    char * b = (char *) bIn;
+    return strncmp(a, b, 1);
+}
+
+int cmp_null_term_str(void * aIn, void * bIn){
+    char * a = (char *) aIn;
+    char * b = (char *) bIn;
+    return strcmp(a, b);
+}
+
+//////////
+// List functions.
 
 /* 
   Returns:
@@ -331,7 +385,132 @@ bool lst_insert_at(LST * lstObj, void * elem, int pos){
         lstObj->size++;
         return true;
     }
+}  
+
+
+/*
+
+  Parameters:
+    LST * lstObj - This is a list object created with the lst_new() func.
+
+    void * elem - The element to be added, a previously allocated element.
+
+    ptr_to_funct_cmp - Receives a pointer to a function compare that as 
+                       2 parameters "a" and "b" and returns int,
+                       1 if a > b, 0 if a == b and -1 if a < b.
+
+                       The function as the following example implementation:
+                       
+                        int cmp_int(void * aIn, void * bIn ){
+                            int * a = (int *) aIn;
+                            int * b = (int *) bIn;
+                            if (*a > *b)
+                                return 1;
+                            else if (*a < *b)
+                                return -1;
+                            else 
+                                return 0;   
+                        }
+
+  Returns:
+    bool - In case of error while inserting a new element in the list.
+
+  ERRORS:
+    See stderr for the errors.
+*/
+bool lst_insert_ordered(LST * lstObj, void * elem,
+                        int (* const ptr_to_funct_cmp) (void * a, void * b ) ){
+
+    if (lstObj == NULL){
+        fprintf(stderr, "ERROR: jco_list in func lst_insert_ordered: lstObj is NULL!\n");
+        return false;
+    }else if (elem == NULL){
+        fprintf(stderr, "ERROR: jco_list in func lst_insert_ordered: elem is NULL!\n");
+        return false;
+    }else if ( ptr_to_funct_cmp == NULL ){
+        fprintf(stderr, 
+          "ERROR: jco_list in func lst_insert_ordered: pointer to function compare is NULL !\n");
+        return false;
+    }else{
+        NODE * nodeToBeInserted = (NODE *) malloc(sizeof(NODE));
+        if (nodeToBeInserted == NULL){
+            fprintf(stderr, 
+              "ERROR: jco_list in func lst_insert_ordered: while allocating NODE!\n");
+            return false;
+        }
+
+        NODE * currNode = NULL;
+        nodeToBeInserted->elem = elem;
+        
+        // Decide if start from the begin or from the end?
+        // Find the node corresponding to the position before the position.
+        if (lstObj->firstNode == NULL){
+            currNode = NULL;
+            // Adding when the list is empty.
+            nodeToBeInserted->prev = NULL;
+            nodeToBeInserted->next = NULL;
+            lstObj->firstNode = nodeToBeInserted;
+            lstObj->lastNode  = nodeToBeInserted;
+        }else{
+            currNode = lstObj->firstNode;
+
+            while(currNode != NULL){
+                void * a = elem;
+                void * b = currNode->elem;
+                int cmp_val = (* ptr_to_funct_cmp) (a, b);
+                if(cmp_val == -1 || cmp_val == 0){
+                    // Add before currNode.
+
+                    if (currNode == lstObj->firstNode){
+                        // POS 0.
+                        // Adding at the begin when size != 0.
+                        nodeToBeInserted->prev = NULL;
+                        nodeToBeInserted->next = lstObj->firstNode;
+                        lstObj->firstNode = nodeToBeInserted;
+                        // lstObj->lastNode  = ; // We don't change.
+                        // Node N + 1
+                        nodeToBeInserted->next->prev = nodeToBeInserted;   
+                        // Node N - 1
+                        // currNode->next = ; // It doesn't exists.        
+                    } else {
+                        // Pos >= 1
+                        // Adding in the middle when size != 0.
+                        nodeToBeInserted->prev = currNode->prev;
+                        nodeToBeInserted->next = currNode;
+                        // Node N + 1
+                        NODE * prev = currNode->prev;
+                        if (prev != NULL)
+                            prev->next = nodeToBeInserted; 
+                        // Node N - 1
+                        currNode->prev = nodeToBeInserted;        
+                    }
+                    break;
+                } else {
+                    // Search for next node and compare again.
+                    currNode = currNode->next;
+
+                    // Have to add someware after currNode.
+                }
+            }
+            if (currNode == NULL){
+                currNode = lstObj->lastNode;
+                // We will add at the end of the list after currNode.
+                // Adding at the end when size != 0.
+                nodeToBeInserted->prev = currNode;
+                nodeToBeInserted->next = NULL;
+                // lstObj->firstNode = ;  // We don't change.
+                lstObj->lastNode = nodeToBeInserted;
+                // Node N + 1
+                // currNode->next->prev = ; // It doesn't exists.
+                // Node N - 1
+                currNode->next = nodeToBeInserted;
+            }
+        }
+        lstObj->size++;
+        return true;
+    }
 }
+
 
 
 /////////
@@ -547,3 +726,104 @@ bool lst_iter_is_end(LST * lstObj){
     }
 }
 
+
+/*
+
+  Parameters:
+    LST * lstObj - This is a list object created with the lst_new() func.
+
+    void * elem - The element to be added, a previously allocated element.
+
+    ptr_to_funct_cmp - Receives a pointer to a function compare that as 
+                       2 parameters "a" and "b" and returns int,
+                       1 if a > b, 0 if a == b and -1 if a < b.
+
+                       The function as the following example implementation:
+                       
+                        int cmp_int(void * aIn, void * bIn ){
+                            int * a = (int *) aIn;
+                            int * b = (int *) bIn;
+                            if (*a > *b)
+                                return 1;
+                            else if (*a < *b)
+                                return -1;
+                            else 
+                                return 0;   
+                        }
+
+    LST_DIRECTION direction - 
+                              LST_UP   - From start to end.
+                              LST_DOWN - From end to start.
+
+    NODE * currNode - Pointer to start from.
+ 
+    NODE ** foundNode - Pointer to pointer to found Node.
+
+  Returns:
+    void * - Returns ptr to element. 
+             In case of error or element not found return NULL.
+
+  ERRORS:
+    See stderr for the errors.
+*/
+void * lst_find(LST * lstObj, void * elem, 
+                int (* const ptr_to_funct_cmp) (void * a, void * b),
+                LST_DIRECTION direction,
+                NODE * currNode,
+                NODE ** foundNode){
+
+    if (lstObj == NULL){
+        fprintf(stderr, "ERROR: jco_list in func lst_find: lstObj is NULL!\n");
+        return NULL;
+    } else if (elem == NULL){
+        fprintf(stderr, "ERROR: jco_list in func lst_find: elem is NULL!\n");
+        return NULL;
+    } else if ( ptr_to_funct_cmp == NULL ){
+        fprintf(stderr, 
+          "ERROR: jco_list in func lst_find: pointer to function compare is NULL !\n");
+        return NULL;
+    } else if ( direction != LST_D_UP && direction != LST_D_DOWN ){
+        fprintf(stderr, 
+          "ERROR: jco_list in func lst_find: direction parameter isn't vallid!\n");
+        return NULL;
+    } else {
+        // NODE * currNode = NULL;
+
+        if (lstObj->firstNode == NULL){
+            return NULL;
+            if (foundNode != NULL)
+                *foundNode = NULL;
+        }
+        if (direction == LST_D_UP){
+            if (currNode == NULL)
+                currNode = lstObj->firstNode;
+            while(currNode != NULL){
+                void * a = elem;
+                void * b = currNode->elem;
+                int cmp_val = (* ptr_to_funct_cmp) (a, b);
+                if(cmp_val == 0){
+                    if (foundNode != NULL)
+                        *foundNode = currNode;
+                    return currNode->elem;
+                } else {
+                    // Search for next node and compare again for equality.
+                    currNode = currNode->next;
+                }
+            }
+            if (foundNode != NULL)
+                *foundNode = NULL;
+            return NULL;
+        }else if (direction == LST_D_DOWN){
+
+        }
+    }
+    if (foundNode != NULL)
+        *foundNode = NULL;
+    return NULL;
+}
+
+
+/*
+void * lst_find_last(LST * lstObj, void * elem, int (* const ptr_to_funct_equals) (void * a, void * b) );
+void * lst_find_all(LST * lstObj, void * elem, int (* const ptr_to_funct_equals) (void * a, void * b) );
+*/

@@ -1440,6 +1440,22 @@ This is a Abstract Double Linked List, called jco_list and it's license is MIT O
 The interface od the list follows. To see examples of the list usage see the tests inside the main.c source code file.
 
 ```
+typedef struct node{
+    void * elem;
+    struct node * next;
+    struct node * prev;
+} NODE;
+
+typedef struct{
+    NODE * firstNode;
+    NODE * lastNode;
+    int size;
+    NODE * iterator;
+} LST;
+
+typedef enum { LST_D_UP, LST_D_DOWN } LST_DIRECTION;
+
+
 LST *  lst_new(/* NULL or pointer to function equals == */);
 bool   lst_free(LST * lstObj);
 
@@ -1453,6 +1469,12 @@ bool   lst_insert_first(LST * lstObj, void * elem);
 bool   lst_insert_last(LST * lstObj, void * elem);
 bool   lst_insert_at(LST * lstObj, void * elem, int pos);
 
+// Receives a pointer to a function compare that as 
+// 2 parameters "a" and "b" and returns int,
+// 1 if a > b, 0 if a == b and -1 if a < b.
+ bool   lst_insert_ordered(LST * lstObj, void * elem,
+                          int (* const ptr_to_funct_cmp) (void * a, void * b ) );
+
 void * lst_remove_first(LST * lstObj);
 void * lst_remove_last(LST * lstObj);
 void * lst_remove_at(LST * lstObj, int pos);
@@ -1465,10 +1487,21 @@ void * lst_iter_prev(LST * lstObj);
 bool   lst_iter_is_begin(LST * lstObj);
 bool   lst_iter_is_end(LST * lstObj);
 
+void * lst_find(LST * lstObj, void * elem, 
+                int (* const ptr_to_funct_cmp) (void * a, void * b),
+                LST_DIRECTION direction,
+                NODE * currNode,
+                NODE ** foundNode);
+
+int cmp_int(void * aIn, void * bIn);
+int cmp_float(void * aIn, void * bIn);
+int cmp_double(void * aIn, void * bIn);
+int cmp_single_char(void * aIn, void * bIn);
+int cmp_null_term_str(void * aIn, void * bIn);
+
 ```
 
 # TODO:
--Finishing implement the abstract list. <br>
 -Implement a abstract ArrayList. <br>
 -Implement a abstract HashTable. <br>
 
