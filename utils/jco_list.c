@@ -813,8 +813,26 @@ void * lst_find(LST * lstObj, void * elem,
             if (foundNode != NULL)
                 *foundNode = NULL;
             return NULL;
-        }else if (direction == LST_D_DOWN){
 
+        }else if (direction == LST_D_DOWN){
+            if (currNode == NULL)
+                currNode = lstObj->lastNode;
+            while(currNode != NULL){
+                void * a = elem;
+                void * b = currNode->elem;
+                int cmp_val = (* ptr_to_funct_cmp) (a, b);
+                if(cmp_val == 0){
+                    if (foundNode != NULL)
+                        *foundNode = currNode;
+                    return currNode->elem;
+                } else {
+                    // Search for prev node and compare again for equality.
+                    currNode = currNode->prev;
+                }
+            }
+            if (foundNode != NULL)
+                *foundNode = NULL;
+            return NULL;
         }
     }
     if (foundNode != NULL)
@@ -822,8 +840,3 @@ void * lst_find(LST * lstObj, void * elem,
     return NULL;
 }
 
-
-/*
-void * lst_find_last(LST * lstObj, void * elem, int (* const ptr_to_funct_equals) (void * a, void * b) );
-void * lst_find_all(LST * lstObj, void * elem, int (* const ptr_to_funct_equals) (void * a, void * b) );
-*/

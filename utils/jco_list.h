@@ -108,6 +108,4 @@ void * lst_find_last(LST * lstObj, void * elem, int (* const ptr_to_funct_equals
 void * lst_find_all(LST * lstObj, void * elem, int (* const ptr_to_funct_equals) (void * a, void * b) );
 
 
-
-
 #endif

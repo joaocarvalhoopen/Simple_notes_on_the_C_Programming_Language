@@ -290,7 +290,7 @@ int test_lst_02(){
 
 
     /////////
-    // Test lst_find() detecting several occurrences of element inside an object.
+    // Test lst_find() detecting several occurrences  of element inside an object.
 
     // Insert one more element, copy of var_int_0.
     *var_int_n = *var_int_0;
@@ -315,7 +315,6 @@ int test_lst_02(){
     free(foundNode);
     free(var_int_n);
 
-    // Remove the added element.
     lst_remove_last(lst);
 
 
