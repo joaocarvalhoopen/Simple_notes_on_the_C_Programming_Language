@@ -433,6 +433,8 @@ int clear(int *ar_tmp, size_row, position_clear){
 
 2. Ternary operator
 
+3. Short circuit with operators 
+
 ```
 // ** 1 **
 
@@ -449,6 +451,19 @@ if (num_k){   // This is (num_k != 0)  True
 
 // Ternary operator.
 int i = (2 > 1) ? 1 : 2;
+
+
+// ** 3 **
+
+// Short circuit with operators. Those are valid.
+
+if (a && 1 / a){
+
+}
+
+if (ptr && *ptr++){
+
+}
 
 ```
 
