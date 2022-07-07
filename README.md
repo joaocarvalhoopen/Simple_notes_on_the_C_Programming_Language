@@ -533,6 +533,60 @@ if ( (x > 2.0 - 0.0001) && (x < 2.0 + 0.0001){
 
 ```
 
+
+```C
+
+// SET BIT - Set Bit 2 to 1 (True) on PORTB with OR:
+   PORTB |= (1 << 2);
+
+   // Set bit 2 and bit 4 to 1 (True):
+   PORTB |= ( (1 << 2) | (1 << 4) );   
+
+
+// CLEAR BIT - Clear Bit 2 to 0 (False) on PORTB with AND and NOT:
+   PORTB &= ~(1 << 2);
+
+   // Clear bit 2 and bit 4 to 0 (False):
+   PORTB &= ~( (1 << 2) | (1 << 4) );
+
+
+// TOGGLE BIT - Toggle or flip bit 2 on PORTB with XOR:
+   PORTB ^= (1 << 2); 
+
+   // Flip bit 2 and bit 4 from 0 -> 1 or from 1 -> 0:
+   PORTB &= ~( (1 << 2) | (1 << 4) );
+
+
+
+// Make a one bit light up from right to left and from left to right:
+
+#define DELAY_TIME 300  /* ms */
+
+// PORTB is a 8 bit ports.
+PORTB = 0;   // Clears PORTB.
+uint8_t i;
+
+// From right to left.
+for(i=0; i < 8; i++) {
+   PORTB |= (1 << i);       // Set bit.
+   _delay_ms(DELAY_TIME);
+   PORTB &= ~(1 << i);      // Clear bit.
+}
+
+// From left to right.
+for(i=7; i < 255; i--) {
+   PORTB |= (1 << i);       // Set bit.  
+   _delay_ms(DELAY_TIME);
+   PORTB &= ~(1 << i);      // Clear bit.
+}
+
+// Note: In the place of i < 255,
+//       can't use i < 0 neither i <= 0.
+//       The last one will give you
+//       a infinite loop because of underflow. 
+
+```
+
 ## sizeof operator
 
 ```
