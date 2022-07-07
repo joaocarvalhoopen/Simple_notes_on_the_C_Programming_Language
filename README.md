@@ -585,6 +585,40 @@ for(i=7; i < 255; i--) {
 //       The last one will give you
 //       a infinite loop because of underflow. 
 
+
+//######
+// How to test if the bit of register is set to 1 or 0?
+
+// Test if the 2 bit is 1 (True).
+
+// PIND    : xxxx xxxx
+// (1 << 2): 0000 0100
+//       & : 0000 0x00
+
+// In C, "if" is FALSE if is zero
+// and TRUE for all other values. 
+
+if ( PIND & ( 1<<2 ) ) {
+  do_something();
+}
+
+
+#define BIT_SHIFT(bit)         ( 1 << (bit) ) 
+#define BIT_IS_SET(reg, bit)   ( (reg) & BIT_SHIFT(bit) ) 
+#define BIT_IS_CLEAR(reg, bit) ( !( (reg) & BIT_SHIFT(bit) ) ) 
+#define LOOP_UNTIL_BIT_IS_SET(reg, bit)   do { } while ( BIT_IS_CLEAR(reg, bit) ) 
+#define LOOP_UNTIL_BIT_IS_CLEAR(reg, bit) do { } while ( BIT_IS_SET(reg, bit) ) 
+
+if (BIT_IS_SET(PINB, 2)) {
+   do_something();  
+}
+
+
+// Note: The bit manipulation notes are modified
+//       versions that come from the fantastic book:
+//       Make: AVR Programming by Elliot Williams
+
+
 ```
 
 ## sizeof operator
