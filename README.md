@@ -536,25 +536,37 @@ if ( (x > 2.0 - 0.0001) && (x < 2.0 + 0.0001){
 
 ```C
 
-// SET BIT - Set Bit 2 to 1 (True) on PORTB with OR:
-   PORTB |= (1 << 2);
+// REG_A - Is a example Micro-controller peripheral register,
+//         that is memory mapped into a memory address.
+//         They can be found in the datasheet of the MCU,
+//         in the section of the registers of the specific
+//         peripheral and there, you can find also the info
+//         on the functionality of every bit in it.
+//         Some register are Write only, some are Read only,
+//         some of them are Read and Write.
+//         The Datasheet, User Guide and Erratas of them
+//         for the MCU are the truth that will guide you! 
+
+
+// SET BIT - Set Bit 2 to 1 (True) on REG_A with OR:
+   REG_A |= (1 << 2);
 
    // Set bit 2 and bit 4 to 1 (True):
-   PORTB |= ( (1 << 2) | (1 << 4) );   
+   REG_A |= ( (1 << 2) | (1 << 4) );   
 
 
-// CLEAR BIT - Clear Bit 2 to 0 (False) on PORTB with AND and NOT:
-   PORTB &= ~(1 << 2);
+// CLEAR BIT - Clear Bit 2 to 0 (False) on REG_A with AND and NOT:
+   REG_A &= ~(1 << 2);
 
    // Clear bit 2 and bit 4 to 0 (False):
-   PORTB &= ~( (1 << 2) | (1 << 4) );
+   REG_A &= ~( (1 << 2) | (1 << 4) );
 
 
-// TOGGLE BIT - Toggle or flip bit 2 on PORTB with XOR:
-   PORTB ^= (1 << 2); 
+// TOGGLE BIT - Toggle or flip bit 2 on REG_A with XOR:
+   REG_A ^= (1 << 2); 
 
    // Flip bit 2 and bit 4 from 0 -> 1 or from 1 -> 0:
-   PORTB ^= ( (1 << 2) | (1 << 4) );
+   REG_A ^= ( (1 << 2) | (1 << 4) );
 
 
 
@@ -563,21 +575,21 @@ if ( (x > 2.0 - 0.0001) && (x < 2.0 + 0.0001){
 #define DELAY_TIME 300  /* ms */
 
 // PORTB is a 8 bit ports.
-PORTB = 0;   // Clears PORTB.
+REG_A = 0;   // Clears REG_A.
 uint8_t i;
 
 // From right to left.
 for(i=0; i < 8; i++) {
-   PORTB |= (1 << i);       // Set bit.
+   REG_A |= (1 << i);       // Set bit.
    _delay_ms(DELAY_TIME);
-   PORTB &= ~(1 << i);      // Clear bit.
+   REG_A &= ~(1 << i);      // Clear bit.
 }
 
 // From left to right.
 for(i=7; i < 255; i--) {
-   PORTB |= (1 << i);       // Set bit.  
+   REG_A |= (1 << i);       // Set bit.  
    _delay_ms(DELAY_TIME);
-   PORTB &= ~(1 << i);      // Clear bit.
+   REG_A &= ~(1 << i);      // Clear bit.
 }
 
 // Note: In the place of i < 255,
@@ -591,14 +603,14 @@ for(i=7; i < 255; i--) {
 
 // Test if the 2 bit is 1 (True).
 
-// PIND    : xxxx xxxx
+// REG_A   : xxxx xxxx
 // (1 << 2): 0000 0100
 //       & : 0000 0x00
 
 // In C, "if" is FALSE if is zero
 // and TRUE for all other values. 
 
-if ( PIND & ( 1<<2 ) ) {
+if ( REG_A & ( 1<<2 ) ) {
   do_something();
 }
 
@@ -609,14 +621,91 @@ if ( PIND & ( 1<<2 ) ) {
 #define LOOP_UNTIL_BIT_IS_SET(reg, bit)   do { } while ( BIT_IS_CLEAR(reg, bit) ) 
 #define LOOP_UNTIL_BIT_IS_CLEAR(reg, bit) do { } while ( BIT_IS_SET(reg, bit) ) 
 
-if (BIT_IS_SET(PINB, 2)) {
+if (BIT_IS_SET(REG_A, 2)) {
    do_something();  
 }
 
 
-// Note: The bit manipulation notes are modified
-//       versions that come from the fantastic book:
-//       Make: AVR Programming by Elliot Williams
+// ######
+// To set a number or bit mask, 
+// by clear the first 4 bit's
+// and set the first 2 bit's to
+// the number 3 (0000 0011) do:
+
+#define PC3 0x3 // 0000 0011
+
+REG_A = REG_A & 0b11110000;   // clear all 4 bits
+REG_A = REG_A | PC3;          // set the bits we need 
+
+// More compact ways of doing it. 
+
+REG_A = (0b11110000 & REG_A) | PC3; 
+
+// or
+ 
+REG_A = (0xf0 & REG_A) | PC3;
+
+// or
+
+REG_A = (0xf0 & REG_A) | 3;
+
+
+// Important Note: 
+//   The bit manipulation notes are modified
+//   versions from the fantastic book:
+//
+//   Make: AVR Programming by Elliot Williams
+//   
+//   A can't recommend enough this book to all future embedded
+//   or micro-controller developers because it's a really
+//   important stepping stone in your journey
+//   for every kind, brand and family of MCU not
+//   just AVR. This book is that good!
+//
+//   With it, you will learn 6 things, principles:
+//      1. - How to program a MCU just from registers.
+//      2. - How to read and use a MCU datasheet.
+//      3. - How to the set of most common MCU peripherals work
+//           and how to use them well.
+//      4. - Bit fiddling and how to use timers and interrupts well.
+//      5. - Good practices of MCU development
+//           and advanced stuff like ADC's, SPI, I2C, clocks and more.
+//      6. - Some really cool projects.
+//
+// Final note: This book is a labour of love
+//             and you can see it in every word of it!
+//             Make yourself a favour and grab a copy of it!
+
+
+
+
+// Simple debounce routine:
+
+#define DEBOUNCE_TIME  1000    /* ms */
+#define BUTTON_PIN_A      1
+
+uint8_t debounce_button_A() {
+  if ( BIT_IS_CLEAR( BUTTON_PIN_PORT_REG, BUTTON_PIN_A ) ) {
+     // The button has a pull-up resistor
+     // so it's active low, and we test if it is zero,
+     // here it is pressed.
+     _delay_us( DEBOUNCE_TIME );
+     if ( BIT_IS_CLEAR( BUTTON_PIN_PORT_REG, BUTTON_PIN_A ) ) {
+       // We wait 1 ms and see if it is still pressed,
+       // after the elapsed time and we return the state
+       // of the button.
+       return(1);
+     }
+  }
+  return(0);
+} 
+
+
+// To use do:
+
+if (debounce_button_A()) {
+   do_something();   
+}
 
 
 ```
